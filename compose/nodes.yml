@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  bootnode:
+    image: ethereum/client-go:alltools-stable
+    command: |
+      bootnode
+      -nodekey /config/bootnode.key
+      -verbosity 9
+    volumes:
+      - ../config:/config
+    expose:
+      - "30301"
+
+  master:
+    image: kayen/kayen:latest
+    restart: always
+    command: |
+      --datadir /root/kayendata/
+      --bootnodes "enode://136ae217ee72d4f1763d35bbc7e6821e70f9bbc03623cd04650c745090a097a704992d27f23cf3dd6f5b72b6cc10e9a0b47c12538f190c3520938b37c8fc7f1d@172.23.0.2:30301"
+      --networkid 2442
+      --verbosity 4
+    volumes:
+      - ../config:/config
+      - master-data:/root/kayendata/
+    expose:
+      - "8545"
+      - "30303"
+
+  slave:
+    image: kayen/kayen:latest
+    restart: always
+    command: |
+      --datadir /root/kayendata
+      --bootnodes "enode://136ae217ee72d4f1763d35bbc7e6821e70f9bbc03623cd04650c745090a097a704992d27f23cf3dd6f5b72b6cc10e9a0b47c12538f190c3520938b37c8fc7f1d@172.23.0.2:30301"
+      --networkid 2442
+    volumes:
+      - ../config:/config
+      - slave-data:/root/kayendata/
+    expose:
+      - "8545"
+      - "30303"
+
+volumes:
+  master-data:
+  slave-data:
